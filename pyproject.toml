@@ -1,5 +1,9 @@
+[project]
+name = "physical-ai-textbook-chatbot-backend"
+version = "1.0.0"
+description = "A FastAPI backend for physical AI textbook chatbot"
+readme = "README.md"
 requires-python = ">=3.11,<3.12"
-
 dependencies = [
     "fastapi==0.111.0",
     "pydantic==2.8.2",
