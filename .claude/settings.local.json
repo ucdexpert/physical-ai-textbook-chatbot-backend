@@ -11,7 +11,9 @@
       "Bash(python test_imports.py)",
       "Bash(python test_api_load.py)",
       "Bash(python test_health.py)",
-      "Bash(python test_main_import.py)"
+      "Bash(python test_main_import.py)",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__get-library-docs"
     ]
   }
 }
