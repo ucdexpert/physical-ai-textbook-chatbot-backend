@@ -1,5 +1,5 @@
 import os
-from agents.agent import Agent
+from agents import Agent
 from tools import search_book_content, format_context_for_answer
 from gemini_config import model
 
@@ -16,10 +16,10 @@ PROTOCOL:
 5. If the search returns no results, state clearly that the information is not in the book.
 """
 
-# Instantiate the Agent
+# Instantiate the Agent with proper configuration for latest API
 textbook_agent = Agent(
     name="Physical AI Tutor",
     instructions=SYSTEM_INSTRUCTIONS,
     tools=[search_book_content, format_context_for_answer],
-    model=model 
+    model=model
 )

@@ -6,7 +6,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.http import models as rest
 from dotenv import load_dotenv
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from agents.tool import function_tool
 
 # Load environment variables
@@ -17,15 +17,19 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("tools")
 
 # ---------------------------
-# Pydantic Models (STRICT)
+# Pydantic Models (STRICT) - Pydantic v2 compatible
 # ---------------------------
 
 class BookChunk(BaseModel):
-    text: str
-    title: str
-    heading: str
-    slug: str
-    score: float
+    text: str = Field(..., description="The content text from the book")
+    title: str = Field(..., description="The chapter title")
+    heading: str = Field(..., description="The section heading")
+    slug: str = Field(..., description="The URL-friendly identifier")
+    score: float = Field(..., description="The relevance score")
+
+    class Config:
+        # For backward compatibility if needed
+        from_attributes = True
 
 
 # ---------------------------
@@ -33,14 +37,23 @@ class BookChunk(BaseModel):
 # ---------------------------
 
 def get_qdrant_client() -> QdrantClient:
+    qdrant_url = os.getenv("QDRANT_URL")
+    qdrant_api_key = os.getenv("QDRANT_API_KEY")
+
+    if not qdrant_url or not qdrant_api_key:
+        raise ValueError("QDRANT_URL and QDRANT_API_KEY must be set in environment variables")
+
     return QdrantClient(
-        url=os.getenv("QDRANT_URL"),
-        api_key=os.getenv("QDRANT_API_KEY"),
+        url=qdrant_url,
+        api_key=qdrant_api_key,
         timeout=30,
     )
 
 def configure_gemini():
-    genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        raise ValueError("GEMINI_API_KEY must be set in environment variables")
+    genai.configure(api_key=api_key)
 
 # ---------------------------
 # Tool 1: Search
@@ -51,9 +64,12 @@ def search_book_content(query: str, top_k: int = 5) -> List[BookChunk]:
     """
     Search the Physical AI textbook for relevant content based on a query.
     """
+    if not query or not query.strip():
+        return []
+
     configure_gemini()
     client = get_qdrant_client()
-    
+
     logger.info(f"Searching book for: {query}")
 
     # 1. Embed the query using Gemini
@@ -85,16 +101,16 @@ def search_book_content(query: str, top_k: int = 5) -> List[BookChunk]:
     for point in search_results:
         payload = point.payload or {}
 
-        results.append(
-            BookChunk(
-                text=payload.get("text", ""),
-                title=payload.get("title", "Unknown Chapter"),
-                heading=payload.get("heading", "Section"),
-                slug=payload.get("slug", ""),
-                score=float(point.score)
-            )
+        # Create BookChunk instance with validation
+        book_chunk = BookChunk(
+            text=payload.get("text", ""),
+            title=payload.get("title", "Unknown Chapter"),
+            heading=payload.get("heading", "Section"),
+            slug=payload.get("slug", ""),
+            score=float(point.score)
         )
-    
+        results.append(book_chunk)
+
     return results
 
 # ---------------------------
@@ -110,13 +126,15 @@ def format_context_for_answer(results: List[BookChunk]) -> str:
         return "No relevant information found in the textbook."
 
     formatted_text = "REFERENCES FROM TEXTBOOK:\n\n"
-    
+
     for i, item in enumerate(results, 1):
+        # Using model_dump() for Pydantic v2 compatibility
+        item_dict = item.model_dump()
         formatted_text += (
             f"--- Source {i} ---\n"
-            f"Chapter: {item.title}\n"
-            f"Section: {item.heading}\n"
-            f"Text: {item.text}\n\n"
+            f"Chapter: {item_dict.get('title', 'N/A')}\n"
+            f"Section: {item_dict.get('heading', 'N/A')}\n"
+            f"Text: {item_dict.get('text', 'N/A')}\n\n"
         )
-    
+
     return formatted_text
