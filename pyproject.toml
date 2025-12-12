@@ -1,14 +1,9 @@
-[project]
-name = "rag-bot"
-version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
-requires-python = ">=3.11,<3.12"  # Python 3.11 use karo
+requires-python = ">=3.12"
 
 dependencies = [
     "fastapi>=0.115.0,<0.120.0",
-    "pydantic>=2.10.0,<2.11.0",      # 2.10.x stable
-    "pydantic-core>=2.10.0,<2.11.0", # compatible core
+    "pydantic>=2.12.0",      # 3.12 compatible latest
+    "pydantic-core>=2.24.0", # 3.12 compatible latest
     "openai-agents>=0.6.2",
     "openai>=1.10.0",
     "python-dotenv>=1.2.1",
@@ -16,5 +11,5 @@ dependencies = [
     "qdrant-client>=1.16.1",
     "uvicorn>=0.38.0",
     "google-generativeai>=0.8.3",
-    "starlette>=0.40.0,<0.45.0",
+    "starlette>=0.40.0,<0.45.0"
 ]
