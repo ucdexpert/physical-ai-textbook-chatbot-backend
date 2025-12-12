@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(pip show openai-agents)",
+      "Bash(python -c \"import agents; print(dir(agents))\")",
+      "Bash(python -c \"from agents.tool import function_tool; print(''agents.tool import successful'')\")",
+      "Bash(python -c \"from agents.run import Runner; print(''agents.run import successful'')\")",
+      "Bash(python -c \"from agents.models.openai_chatcompletions import OpenAIChatCompletionsModel; print(''agents.models.openai_chatcompletions import successful'')\")",
+      "Bash(python -c \"from agents.tracing import set_tracing_disabled; print(''agents.tracing import successful'')\")",
+      "Bash(python test_imports.py)",
+      "Bash(python test_api_load.py)",
+      "Bash(python test_health.py)",
+      "Bash(python test_main_import.py)"
+    ]
+  }
+}
