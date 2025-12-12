@@ -3,11 +3,12 @@ name = "rag-bot"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.11,<3.12"  # Python 3.11 use karo
+
 dependencies = [
     "fastapi>=0.115.0,<0.120.0",
-    "pydantic>=2.10.0",
-    "pydantic-core>=2.23.0",
+    "pydantic>=2.10.0,<2.11.0",      # 2.10.x stable
+    "pydantic-core>=2.10.0,<2.11.0", # compatible core
     "openai-agents>=0.6.2",
     "openai>=1.10.0",
     "python-dotenv>=1.2.1",
